@@ -15,6 +15,9 @@ using Serviced;
 using System;
 using System.IO;
 using System.Reflection;
+using FirebaseAdmin;
+using FirebaseAdmin.Auth;
+using Google.Apis.Auth.OAuth2;
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -138,5 +141,13 @@ public class Startup
 
         // Schedule Hangfire jobs -- Add your jobs in this method
         ConfigureJobs.Schedule();
-    }
+
+        FirebaseApp.Create(new AppOptions()
+        {
+	        Credential = GoogleCredential.FromJson(_configuration["Firebaseadmin"])
+        });
+
+        UserRecord userRecord = FirebaseAuth.DefaultInstance.GetUserAsync("0C9vnauiy4T9Kflx2MrZkN8Wefz1").Result;
+
+	}
 }

@@ -6,6 +6,8 @@ using Serilog.Events;
 using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using Doppler.Extensions.Configuration;
 using Newton.Infrastructure.Common.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Hosting;
@@ -93,7 +95,9 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder();
 
-        builder.Configuration.AddEnvironmentVariables();
+        //builder.Configuration.AddEnvironmentVariables();
+        builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly(), true);
+        builder.Configuration.AddDoppler(builder.Configuration.GetValue<string>("DOPPLER_TOKEN"));
         builder.Host.UseSerilog(Log.Logger);
 
         var startup = new Startup(builder.Configuration);

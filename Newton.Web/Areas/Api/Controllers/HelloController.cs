@@ -8,6 +8,7 @@ using Newton.Domain.Entities.Settings;
 using Newton.Infrastructure.Common.Cache;
 using Newton.Infrastructure.Common.Cache.Services;
 using Newton.Infrastructure.Common.Settings.Services;
+using RoverCore.Abstractions.Settings;
 
 namespace Newton.Web.Areas.Api.Controllers;
 
@@ -16,11 +17,11 @@ namespace Newton.Web.Areas.Api.Controllers;
 [Area("Api")]
 public class HelloController : Controller
 {
-    private readonly SettingsService<ApplicationSettings> _settingsService;
+    private readonly ISettingsService<ApplicationSettings> _settingsService;
     private readonly CacheService _cache;
     private readonly UserManager<ApplicationUser> _userManager;
 
-    public HelloController(SettingsService<ApplicationSettings> settingsService, CacheService cache, UserManager<ApplicationUser> userManager)
+    public HelloController(ISettingsService<ApplicationSettings> settingsService, CacheService cache, UserManager<ApplicationUser> userManager)
     {
         _settingsService = settingsService;
         _cache = cache;
