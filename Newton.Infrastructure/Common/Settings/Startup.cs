@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using RoverCore.Abstractions.Settings;
 using Newton.Domain.Entities.Settings;
 using Newton.Infrastructure.Common.Settings.Services;
+using RoverCore.Abstractions.Settings;
 
 namespace Newton.Infrastructure.Common.Settings;
 
@@ -17,16 +17,16 @@ public static class Startup
 		// Add ApplicationsSettings service
 		var settings = configuration.GetSection("Settings").Get<ApplicationSettings>();
 
-        if (settings == null)
-        {
-            throw new Exception("Missing Application Settings in configuration file");
-        }
+		if (settings == null)
+		{
+			throw new Exception("Missing Application Settings in configuration file");
+		}
 
-        settings.Email ??= new EmailSettings();
+		settings.Email ??= new EmailSettings();
 
 		services.AddSingleton(settings);
 
-        services.AddScoped<ISettingsService<ApplicationSettings>, SettingsService<ApplicationSettings>>();
+		services.AddScoped<ISettingsService<ApplicationSettings>, SettingsService<ApplicationSettings>>();
 
 		// Adds IOptions capabilities
 		services.AddOptions();

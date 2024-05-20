@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Primitives;
-using RoverCore.Abstractions.Templates;
 using Newton.Domain.Entities.Templates;
 
 namespace Newton.Infrastructure.Common.Templates.Models;
@@ -10,34 +9,34 @@ namespace Newton.Infrastructure.Common.Templates.Models;
 /// </summary>
 public class VirtualFileProvider : IFileProvider
 {
-    public List<Template> Templates { get; set; }
+	public List<Template> Templates { get; set; }
 
-    public VirtualFileProvider()
-    {
-	    Templates = new List<Template>();
-    }
+	public VirtualFileProvider()
+	{
+		Templates = new List<Template>();
+	}
 
-    public IDirectoryContents GetDirectoryContents(string subpath)
-    {
-        throw new NotImplementedException();
-    }
+	public IDirectoryContents GetDirectoryContents(string subpath)
+	{
+		throw new NotImplementedException();
+	}
 
-    public IFileInfo GetFileInfo(string subpath)
-    {
-        const string liquidExtension = ".liquid";
-        if (subpath.EndsWith(liquidExtension))
-        {
-            subpath = Path.GetFileNameWithoutExtension(subpath);
-        }
+	public IFileInfo GetFileInfo(string subpath)
+	{
+		const string liquidExtension = ".liquid";
+		if (subpath.EndsWith(liquidExtension))
+		{
+			subpath = Path.GetFileNameWithoutExtension(subpath);
+		}
 
-	    var template = Templates.Find(t => t.Slug == subpath);
+		var template = Templates.Find(t => t.Slug == subpath);
 
-	    return new VirtualFileInfo(template);
-    }
+		return new VirtualFileInfo(template);
+	}
 
-    public IChangeToken Watch(string filter)
-    {
-        throw new NotImplementedException();
-    }
+	public IChangeToken Watch(string filter)
+	{
+		throw new NotImplementedException();
+	}
 }
 

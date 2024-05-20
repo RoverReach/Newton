@@ -1,153 +1,147 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
-using Newton.Domain.Entities.Identity;
-using Newton.Infrastructure.Persistence.DbContexts;
-using RoverCore.BreadCrumbs.Services;
-using RoverCore.Navigation.Services;
-using RoverCore.ToastNotification;
-using Serviced;
-using System;
-using System.IO;
-using System.Reflection;
 using FirebaseAdmin;
 using FirebaseAdmin.Auth;
 using Google.Apis.Auth.OAuth2;
-using Hangfire;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
-using Newton.Infrastructure.Common;
-using Newton.Infrastructure.Common.Email.Services;
-using Newton.Infrastructure.Common.Extensions;
-using Newton.Infrastructure.Common.Hangfire.Filters;
+using Google.Cloud.Firestore;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
+using Newton.Infrastructure.Common.Firestore;
 using Newton.Infrastructure.Common.Seeder.Services;
-using Newton.Infrastructure.Common.Settings.Services;
-using Newton.Infrastructure.Common.Templates;
-using Newton.Infrastructure.Common.Templates.Services;
-using Newton.Infrastructure.Identity.Services;
 using Newton.Web.Jobs;
+using RoverCore.BreadCrumbs.Services;
+using RoverCore.Navigation.Services;
+using RoverCore.ToastNotification;
+using System;
+using System.IO;
+using System.Reflection;
 
 namespace Newton.Web;
 
 public class Startup
 {
-    public IConfiguration _configuration { get; }
+	public IConfiguration _configuration { get; }
 
-    public Startup(IConfiguration configuration)
-    {
-        _configuration = configuration;
-    }
+	public Startup(IConfiguration configuration)
+	{
+		_configuration = configuration;
+	}
 
-    // This method gets called by the runtime. Use this method to add services to the container.
-    public void ConfigureServices(IServiceCollection services)
-    {
-        // Auto-register services implementing IScoped, ITransient, ISingleton (thanks to Georgi Stoyanov)
-        Infrastructure.Startup.ConfigureServicesDiscovery(services, typeof(Startup).Assembly, typeof(ApplicationSeederService).Assembly);
+	// This method gets called by the runtime. Use this method to add services to the container.
+	public void ConfigureServices(IServiceCollection services)
+	{
+		// Auto-register services implementing IScoped, ITransient, ISingleton (thanks to Georgi Stoyanov)
+		Infrastructure.Startup.ConfigureServicesDiscovery(services, typeof(Startup).Assembly, typeof(ApplicationSeederService).Assembly);
 
-        // Configure infrastructure services (see Startup.cs of the Infrastructure project)
-        Infrastructure.Startup.ConfigureServices(services, _configuration);
+		// Configure infrastructure services (see Startup.cs of the Infrastructure project)
+		Infrastructure.Startup.ConfigureServices(services, _configuration);
 
-        services.AddRouting(options => options.LowercaseUrls = true) // Add routing with lowercase url configuration
-            .AddCors() // Adds cross-origin sharing services
-            .AddHttpContextAccessor();  // Add default HttpContextAccessor service
+		services.AddRouting(options => options.LowercaseUrls = true) // Add routing with lowercase url configuration
+			.AddCors() // Adds cross-origin sharing services
+			.AddHttpContextAccessor();  // Add default HttpContextAccessor service
 
-        // Add a cookie policy to the site
-        services.Configure<CookiePolicyOptions>(options =>
-        {
-            // This lambda determines whether user consent for non-essential 
-            // cookies is needed for a given request.
-            options.CheckConsentNeeded = context => true;
-            // requires using Microsoft.AspNetCore.Http;
-            options.MinimumSameSitePolicy = SameSiteMode.None;
-        });
+		// Add a cookie policy to the site
+		services.Configure<CookiePolicyOptions>(options =>
+		{
+			// This lambda determines whether user consent for non-essential 
+			// cookies is needed for a given request.
+			options.CheckConsentNeeded = context => true;
+			// requires using Microsoft.AspNetCore.Http;
+			options.MinimumSameSitePolicy = SameSiteMode.None;
+		});
 
 
-        // Add Mvc services
-        services.AddMvc()
-                .AddRazorRuntimeCompilation();
+		// Add Mvc services
+		services.AddMvc()
+				.AddRazorRuntimeCompilation();
 
-        services.AddRazorPages();
+		services.AddRazorPages();
 
-        // Add Swagger documentation
-        services.AddSwaggerGen(c =>
-        {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Newton.Web API", Version = "v1" });
+		// Add Swagger documentation
+		services.AddSwaggerGen(c =>
+		{
+			c.SwaggerDoc("v1", new OpenApiInfo { Title = "Newton.Web API", Version = "v1" });
 
-            // Set the comments path for the Swagger JSON and UI.
-            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-            c.IncludeXmlComments(xmlPath);
-        });
+			// Set the comments path for the Swagger JSON and UI.
+			var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+			var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+			c.IncludeXmlComments(xmlPath);
+		});
 
-        // Add third-party presentation layer services
-        services.AddScoped<IBreadCrumbService, BreadCrumbService>();
-        services.AddScoped<NavigationService>();
-        services.AddNotyf(config =>
-        {
-            config.DurationInSeconds = 10;
-            config.IsDismissable = true;
-            config.Position = NotyfPosition.BottomRight;
-        });
+		// Add third-party presentation layer services
+		services.AddScoped<IBreadCrumbService, BreadCrumbService>();
+		services.AddScoped<NavigationService>();
+		services.AddNotyf(config =>
+		{
+			config.DurationInSeconds = 10;
+			config.IsDismissable = true;
+			config.Position = NotyfPosition.BottomRight;
+		});
 
-    }
+		var credential = GoogleCredential.FromJson(_configuration["Firebaseadmin"]);
 
-    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app)
-    {
+		services.AddSingleton(_ => new FirestoreProvider(
+			new FirestoreDbBuilder
+			{
+				ProjectId = credential.QuotaProject,
+				JsonCredentials = _configuration["Firebaseadmin"] // <-- service account json file
+			}.Build()
+		));
+	}
+
+	// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+	public void Configure(IApplicationBuilder app)
+	{
 		app.UseExceptionHandler("/error/500");
-        app.UseHsts();
+		app.UseHsts();
 
-        app.UseStatusCodePagesWithReExecute("/error/{0}");
+		app.UseStatusCodePagesWithReExecute("/error/{0}");
 
-        app.UseHttpsRedirection();
-        app.UseStaticFiles();
-        app.UseCookiePolicy();
-        app.UseRouting();
+		app.UseHttpsRedirection();
+		app.UseStaticFiles();
+		app.UseCookiePolicy();
+		app.UseRouting();
 
-        // global cors policy
-        app.UseCors(x => x
-            .AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader());
+		// global cors policy
+		app.UseCors(x => x
+			.AllowAnyOrigin()
+			.AllowAnyMethod()
+			.AllowAnyHeader());
 
-        // Configure infrastructure middleware
-        Infrastructure.Startup.Configure(app, _configuration);
+		// Configure infrastructure middleware
+		Infrastructure.Startup.Configure(app, _configuration);
 
-        // Note that at least one controller route has to be named "default"
-        // This route will be used to determine the base url for the site by the EmailSender
-        // service
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapRazorPages();
+		// Note that at least one controller route has to be named "default"
+		// This route will be used to determine the base url for the site by the EmailSender
+		// service
+		app.UseEndpoints(endpoints =>
+		{
+			endpoints.MapRazorPages();
 
-            endpoints.MapControllerRoute(
-                name: "areas",
-                pattern: "{area:exists}/{controller}/{action=Index}/{id?}"
-            );
+			endpoints.MapControllerRoute(
+				name: "areas",
+				pattern: "{area:exists}/{controller}/{action=Index}/{id?}"
+			);
 
-            endpoints.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+			endpoints.MapControllerRoute(
+				name: "default",
+				pattern: "{controller=Home}/{action=Index}/{id?}");
 
-        });
+		});
 
-        app.UseSwagger();
-        app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1"); });
+		app.UseSwagger();
+		app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1"); });
 
-        // Schedule Hangfire jobs -- Add your jobs in this method
-        ConfigureJobs.Schedule();
+		// Schedule Hangfire jobs -- Add your jobs in this method
+		ConfigureJobs.Schedule();
 
-        FirebaseApp.Create(new AppOptions()
-        {
-	        Credential = GoogleCredential.FromJson(_configuration["Firebaseadmin"])
-        });
+		FirebaseApp.Create(new AppOptions()
+		{
+			Credential = GoogleCredential.FromJson(_configuration["Firebaseadmin"])
+		});
 
-        UserRecord userRecord = FirebaseAuth.DefaultInstance.GetUserAsync("0C9vnauiy4T9Kflx2MrZkN8Wefz1").Result;
+		UserRecord userRecord = FirebaseAuth.DefaultInstance.GetUserAsync("0C9vnauiy4T9Kflx2MrZkN8Wefz1").Result;
 
 	}
 }

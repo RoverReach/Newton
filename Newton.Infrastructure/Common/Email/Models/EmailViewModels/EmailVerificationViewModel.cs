@@ -1,7 +1,6 @@
-﻿namespace Newton.Infrastructure.Common.Email.Models.EmailViewModels
+﻿namespace Newton.Infrastructure.Common.Email.Models.EmailViewModels;
+
+public class EmailVerificationViewModel : EmailBaseViewModel
 {
-    public class EmailVerificationViewModel : EmailBaseViewModel
-    {
-        public string Link { get; set; } = string.Empty;
-    }
+	public string Link { get; set; } = string.Empty;
 }

@@ -38,7 +38,7 @@ public static class Startup
 				MailPickupDirectory = settings.Email.MailPickupDirectory
 			});
 
-        services.AddTransient<IEmailSender, EmailSender>();
+		services.AddTransient<IEmailSender, EmailSender>();
 	}
 
 	public static void Configure(IApplicationBuilder app, IConfiguration configuration)

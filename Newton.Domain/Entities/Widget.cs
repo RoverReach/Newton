@@ -1,15 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Newton.Domain.Entities
+namespace Newton.Domain.Entities;
+
+public class Widget
 {
-    public class Widget
-    {
-        [Key]
-        public int WidgetId { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public bool Available { get; set; }
-        public int Count { get; set; }
-        public double Price { get; set; }
-    }
+	[Key]
+	public int WidgetId { get; set; }
+	public string Name { get; set; }
+	public string Description { get; set; }
+	public bool Available { get; set; }
+	public int Count { get; set; }
+	public double Price { get; set; }
 }

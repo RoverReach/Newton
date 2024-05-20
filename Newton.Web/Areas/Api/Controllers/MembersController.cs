@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newton.Domain.DTOs.Authentication;
+using Newton.Infrastructure.Authentication.Services;
 using Newton.Web.Areas.Api.Models;
 using System.Threading.Tasks;
-using Newton.Infrastructure.Authentication.Services;
 
 
 namespace Newton.Web.Areas.Api.Controllers;
@@ -14,26 +14,26 @@ namespace Newton.Web.Areas.Api.Controllers;
 [Area("Api")]
 public class MembersController : Controller
 {
-    private readonly IUserService _userService;
+	private readonly IUserService _userService;
 
-    public MembersController(IUserService userService)
-    {
-        _userService = userService;
-    }
+	public MembersController(IUserService userService)
+	{
+		_userService = userService;
+	}
 
-    /// <summary>
-    /// Authenticate a member
-    /// </summary>
-    /// <param name="model"></param>
-    /// <returns></returns>
-    [AllowAnonymous]
-    public async Task<ApiResponse> Authenticate(AuthenticateRequest model)
-    {
-        var member = await _userService.Authenticate(model);
+	/// <summary>
+	/// Authenticate a member
+	/// </summary>
+	/// <param name="model"></param>
+	/// <returns></returns>
+	[AllowAnonymous]
+	public async Task<ApiResponse> Authenticate(AuthenticateRequest model)
+	{
+		var member = await _userService.Authenticate(model);
 
-        if (member == null)
-            return new ApiResponse(System.Net.HttpStatusCode.NotFound, model,"Username or password is incorrect");
+		if (member == null)
+			return new ApiResponse(System.Net.HttpStatusCode.NotFound, model, "Username or password is incorrect");
 
-        return new ApiResponse(System.Net.HttpStatusCode.OK, member);
-    }
+		return new ApiResponse(System.Net.HttpStatusCode.OK, member);
+	}
 }

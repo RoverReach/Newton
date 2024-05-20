@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using RoverCore.Abstractions.Templates;
-using Newton.Domain.Entities.Settings;
-using Newton.Infrastructure.Common.Settings.Services;
 using Newton.Infrastructure.Common.Templates.Services;
+using RoverCore.Abstractions.Templates;
 
 namespace Newton.Infrastructure.Common.Templates;
 

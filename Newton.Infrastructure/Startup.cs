@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serviced;
+using System.Reflection;
 
 namespace Newton.Infrastructure;
 
@@ -24,8 +18,8 @@ public static class Startup
 	public static void ConfigureServicesDiscovery(IServiceCollection services, params Assembly[] assemblies)
 	{
 		services.AddServiced(assemblies);
-        services.AddAutoMapper(assemblies);
-    }
+		services.AddAutoMapper(assemblies);
+	}
 
 	public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
 	{
@@ -47,8 +41,8 @@ public static class Startup
 		// Add Persistence services (entity framework)
 		Persistence.Startup.ConfigureServices(services, configuration);
 
-        // Add Identity
-        Identity.Startup.ConfigureServices(services, configuration);
+		// Add Identity
+		Identity.Startup.ConfigureServices(services, configuration);
 
 		// Add Authentication
 		Authentication.Startup.ConfigureServices(services, configuration);

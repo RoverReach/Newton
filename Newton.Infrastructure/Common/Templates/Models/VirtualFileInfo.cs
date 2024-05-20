@@ -1,39 +1,37 @@
-﻿using System.Text;
-using Microsoft.Extensions.FileProviders;
-using RoverCore.Abstractions.Templates;
+﻿using Microsoft.Extensions.FileProviders;
 using Newton.Domain.Entities.Templates;
+using System.Text;
 
-namespace Newton.Infrastructure.Common.Templates.Models
+namespace Newton.Infrastructure.Common.Templates.Models;
+
+public class VirtualFileInfo : IFileInfo
 {
-    public class VirtualFileInfo : IFileInfo
-    {
-	    private readonly Template? _template;
+	private readonly Template? _template;
 
-	    public VirtualFileInfo(Template? template)
-        {
-	        _template = template;
-	        Exists = template is not null;
-	        LastModified = DateTime.SpecifyKind(_template?.Updated ?? DateTime.UtcNow, DateTimeKind.Utc);
-            Length = Exists ? template!.Body.Length : -1;
-        }
+	public VirtualFileInfo(Template? template)
+	{
+		_template = template;
+		Exists = template is not null;
+		LastModified = DateTime.SpecifyKind(_template?.Updated ?? DateTime.UtcNow, DateTimeKind.Utc);
+		Length = Exists ? template!.Body.Length : -1;
+	}
 
-        public bool Exists { get; }
+	public bool Exists { get; }
 
-        public bool IsDirectory => false;
+	public bool IsDirectory => false;
 
-        public DateTimeOffset LastModified { get; }
+	public DateTimeOffset LastModified { get; }
 
-        public long Length { get; }
+	public long Length { get; }
 
-        public string Name => _template?.Slug ?? string.Empty;
+	public string Name => _template?.Slug ?? string.Empty;
 
 #pragma warning disable CS8603 // Possible null reference return.
-        public string PhysicalPath => null;
+	public string PhysicalPath => null;
 #pragma warning restore CS8603 // Possible null reference return.
 
-        public Stream CreateReadStream()
-        {
-	        return new MemoryStream(Encoding.UTF8.GetBytes(_template?.Body ?? ""));
-        }
-    }
+	public Stream CreateReadStream()
+	{
+		return new MemoryStream(Encoding.UTF8.GetBytes(_template?.Body ?? ""));
+	}
 }

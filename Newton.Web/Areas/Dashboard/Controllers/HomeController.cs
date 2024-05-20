@@ -14,25 +14,25 @@ namespace Newton.Web.Areas.Dashboard.Controllers;
 [ApiExplorerSettings(IgnoreApi = true)]
 public class HomeController : BaseController<HomeController>
 {
-    private readonly UserManager<ApplicationUser> _userManager;
+	private readonly UserManager<ApplicationUser> _userManager;
 
-    public HomeController(UserManager<ApplicationUser> userManager)
-    {
-        _userManager = userManager;
-    }
+	public HomeController(UserManager<ApplicationUser> userManager)
+	{
+		_userManager = userManager;
+	}
 
-    public async Task<IActionResult> Index()
-    {
-        _breadcrumbs.StartAtAction("Dashboard", "Index", "Home", new { Area = "Dashboard" })
-            .Then("Home");
+	public async Task<IActionResult> Index()
+	{
+		_breadcrumbs.StartAtAction("Dashboard", "Index", "Home", new { Area = "Dashboard" })
+			.Then("Home");
 
-        var viewModel = new HomeViewModel
-        {
-            User = await _userManager.GetUserAsync(User)
-        };
+		var viewModel = new HomeViewModel
+		{
+			User = await _userManager.GetUserAsync(User)
+		};
 
-        _toast.Success($"Welcome back {viewModel.User.FirstName}!");
+		_toast.Success($"Welcome back {viewModel.User.FirstName}!");
 
-        return View(viewModel);
-    }
+		return View(viewModel);
+	}
 }

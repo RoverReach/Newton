@@ -1,23 +1,20 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Newton.Domain.Entities.Serilog;
+using Newton.Infrastructure.Persistence.DbContexts;
+using Newton.Web.Controllers;
 using RoverCore.BreadCrumbs.Services;
 using RoverCore.Datatables.DTOs;
 using RoverCore.Datatables.Extensions;
-using Newton.Web.Controllers;
-using Newton.Infrastructure.Common.Extensions;
 using System;
-using System.Linq;
-using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
-using Newton.Domain.Entities.Serilog;
-using Newton.Infrastructure.Persistence.DbContexts;
 
 namespace Newton.Web.Areas.Admin.Controllers;
 
@@ -25,104 +22,104 @@ namespace Newton.Web.Areas.Admin.Controllers;
 [Authorize(Roles = "Admin")]
 public class LogsController : BaseController<LogsController>
 {
-	public class ServiceLogIndexViewModel 
+	public class ServiceLogIndexViewModel
 	{
-		[Key]            
-	    public int Id { get; set; }
-	    public string Message { get; set; }
-	    public string Level { get; set; }
-	    public DateTime TimeStamp { get; set; }
+		[Key]
+		public int Id { get; set; }
+		public string Message { get; set; }
+		public string Level { get; set; }
+		public DateTime TimeStamp { get; set; }
 	}
 
-    private const string areaTitle = "Admin";
+	private const string areaTitle = "Admin";
 
-    private readonly ApplicationDbContext _context;
+	private readonly ApplicationDbContext _context;
 
-    public LogsController(ApplicationDbContext context)
-    {
-        _context = context;
-    }
+	public LogsController(ApplicationDbContext context)
+	{
+		_context = context;
+	}
 
-    // GET: Admin/Logs
-    public IActionResult Index()
-    {
-        _breadcrumbs.StartAtAction("Dashboard", "Index", "Home", new { Area = "Dashboard" })
-			.Then("Service Logs");       
-		
+	// GET: Admin/Logs
+	public IActionResult Index()
+	{
+		_breadcrumbs.StartAtAction("Dashboard", "Index", "Home", new { Area = "Dashboard" })
+			.Then("Service Logs");
+
 		// Fetch descriptive data from the index dto to build the datatables index
 		var metadata = DatatableExtensions.GetDtMetadata<ServiceLogIndexViewModel>();
-		
+
 		return View(metadata);
-   }
+	}
 
-    // GET: Admin/Logs/Details/5
-    public async Task<IActionResult> Details(int? id)
-    {
-        ViewData["AreaTitle"] = areaTitle;
-        _breadcrumbs.StartAtAction("Dashboard", "Index", "Home", new { Area = "Dashboard" })
-            .ThenAction("Service Logs", "Index", "Logs", new { Area = "Admin" })
-            .Then("Log Details");            
+	// GET: Admin/Logs/Details/5
+	public async Task<IActionResult> Details(int? id)
+	{
+		ViewData["AreaTitle"] = areaTitle;
+		_breadcrumbs.StartAtAction("Dashboard", "Index", "Home", new { Area = "Dashboard" })
+			.ThenAction("Service Logs", "Index", "Logs", new { Area = "Admin" })
+			.Then("Log Details");
 
-        if (id == null)
-        {
-            return NotFound();
-        }
+		if (id == null)
+		{
+			return NotFound();
+		}
 
-        var log = await _context.ServiceLog
-            .FirstOrDefaultAsync(m => m.Id == id);
-        if (log == null)
-        {
-            return NotFound();
-        }
+		var log = await _context.ServiceLog
+			.FirstOrDefaultAsync(m => m.Id == id);
+		if (log == null)
+		{
+			return NotFound();
+		}
 
-        try
-        {
-            log.Properties = PrettyXml(log.Properties);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"Unable to parse log properties for log id {log.Id}");
-        }
+		try
+		{
+			log.Properties = PrettyXml(log.Properties);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, $"Unable to parse log properties for log id {log.Id}");
+		}
 
-        return View(log);
-    }
+		return View(log);
+	}
 
 	[HttpPost]
 	[ValidateAntiForgeryToken]
-    public async Task<IActionResult> GetServiceLog(DtRequest request)
-    {
-        try
+	public async Task<IActionResult> GetServiceLog(DtRequest request)
+	{
+		try
 		{
 			var query = _context.ServiceLog;
 			var jsonData = await query.GetDatatableResponseAsync<Log, ServiceLogIndexViewModel>(request);
 
-            return Ok(jsonData);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error generating ServiceLog index json");
-        }
-        
-        return StatusCode(500);
-    }
+			return Ok(jsonData);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error generating ServiceLog index json");
+		}
 
-    private string PrettyXml(string xml)
-    {
-        var stringBuilder = new StringBuilder();
+		return StatusCode(500);
+	}
 
-        var element = XElement.Parse(xml);
+	private string PrettyXml(string xml)
+	{
+		var stringBuilder = new StringBuilder();
 
-        var settings = new XmlWriterSettings();
-        settings.OmitXmlDeclaration = true;
-        settings.Indent = true;
-        settings.NewLineOnAttributes = true;
+		var element = XElement.Parse(xml);
 
-        using (var xmlWriter = XmlWriter.Create(stringBuilder, settings))
-        {
-            element.Save(xmlWriter);
-        }
+		var settings = new XmlWriterSettings();
+		settings.OmitXmlDeclaration = true;
+		settings.Indent = true;
+		settings.NewLineOnAttributes = true;
 
-        return stringBuilder.ToString();
-    }
+		using (var xmlWriter = XmlWriter.Create(stringBuilder, settings))
+		{
+			element.Save(xmlWriter);
+		}
+
+		return stringBuilder.ToString();
+	}
 }
 

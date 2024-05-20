@@ -1,20 +1,19 @@
 ﻿using Hangfire.Dashboard;
 
-namespace Newton.Infrastructure.Common.Hangfire.Filters
+namespace Newton.Infrastructure.Common.Hangfire.Filters;
+
+public class HangfireAuthorizationFilter : IDashboardAuthorizationFilter
 {
-	public class HangfireAuthorizationFilter : IDashboardAuthorizationFilter
+	public bool Authorize(DashboardContext context)
 	{
-		public bool Authorize(DashboardContext context)
-		{
-			var httpContext = context.GetHttpContext();
+		var httpContext = context.GetHttpContext();
 
-			var claims = httpContext?.User?.Identity;
+		var claims = httpContext?.User?.Identity;
 
-			if (claims == null)
-				return false;
+		if (claims == null)
+			return false;
 
-			// Limit hangfire dashboard to just members with admin role
-			return httpContext!.User!.Identity!.IsAuthenticated && httpContext.User.IsInRole("Admin");
-		}
+		// Limit hangfire dashboard to just members with admin role
+		return httpContext!.User!.Identity!.IsAuthenticated && httpContext.User.IsInRole("Admin");
 	}
 }

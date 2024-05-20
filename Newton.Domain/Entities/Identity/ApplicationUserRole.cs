@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace Newton.Domain.Entities.Identity
+namespace Newton.Domain.Entities.Identity;
+
+public class ApplicationUserRole : IdentityUserRole<string>
 {
-    public class ApplicationUserRole : IdentityUserRole<string>
-    {
-        public virtual ApplicationUser User { get; set; }
-        public virtual ApplicationRole Role { get; set; }
-    }
+	public virtual ApplicationUser User { get; set; }
+	public virtual ApplicationRole Role { get; set; }
 }
