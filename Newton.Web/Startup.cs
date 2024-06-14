@@ -16,6 +16,7 @@ using RoverCore.ToastNotification;
 using System;
 using System.IO;
 using System.Reflection;
+using Grpc.Auth;
 
 namespace Newton.Web;
 
@@ -79,12 +80,10 @@ public class Startup
 			config.Position = NotyfPosition.BottomRight;
 		});
 
-		var credential = GoogleCredential.FromJson(_configuration["Firebaseadmin"]);
-
 		services.AddSingleton(_ => new FirestoreProvider(
 			new FirestoreDbBuilder
 			{
-				ProjectId = credential.QuotaProject,
+				ProjectId = "roverreach-d39c1",
 				JsonCredentials = _configuration["Firebaseadmin"] // <-- service account json file
 			}.Build()
 		));

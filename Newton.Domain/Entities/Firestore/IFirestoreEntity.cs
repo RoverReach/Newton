@@ -1,6 +1,6 @@
 ﻿using Google.Cloud.Firestore;
 
-namespace Newton.Infrastructure.Common.Firestore;
+namespace Newton.Domain.Entities.Firestore;
 
 public interface IFirestoreEntity
 {
@@ -8,6 +8,6 @@ public interface IFirestoreEntity
 	/// Gets and set the Id.
 	/// </summary>
 	[FirestoreDocumentId]
-	public DocumentReference? Reference { get; set; }
+	public DocumentReference Reference { get; set; }
 
 }

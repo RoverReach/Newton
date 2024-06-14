@@ -23,7 +23,7 @@ public class EmailSender : IEmailSender
 
 	public EmailSender(ApplicationSettings settings, IFluentEmail fluentEmail, ITemplateService templateService, ILogger<EmailSender> logger, LinkGenerator linkGenerator, IHttpContextAccessor httpContextAccessor)
 	{
-		_settings = settings;
+		_settings = settings ?? new();
 		_email = fluentEmail;
 		_templateService = templateService;
 		_logger = logger;
@@ -98,13 +98,13 @@ public class EmailSender : IEmailSender
 	public void ConfigureEmailDefaults(EmailBaseViewModel viewModel)
 	{
 		if (string.IsNullOrWhiteSpace(viewModel.SenderAddress))
-			viewModel.SenderAddress = _settings.Email.DefaultSenderAddress;
+			viewModel.SenderAddress = _settings.Email?.DefaultSenderAddress ?? "admin@email.com";
 
 		if (string.IsNullOrWhiteSpace(viewModel.SenderName))
-			viewModel.SenderName = _settings.Email.DefaultSenderName;
+			viewModel.SenderName = _settings.Email?.DefaultSenderName ?? "Administrator";
 
 		if (string.IsNullOrWhiteSpace(viewModel.SiteName))
-			viewModel.SiteName = _settings.SiteName;
+			viewModel.SiteName = _settings.SiteName ?? string.Empty;
 
 		if (string.IsNullOrWhiteSpace(viewModel.Company))
 			viewModel.Company = _settings.Company;
