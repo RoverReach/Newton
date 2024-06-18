@@ -124,7 +124,7 @@ public class EmailSender : IEmailSender
 			viewModel.BaseUrl = _settings.BaseUrl;
 		}
 
-		viewModel.LogoImageUrlSmall = _settings.LogoImageUrlSmall.StartsWith("http") ? _settings.LogoImageUrlSmall : JoinUriSegments(_settings.BaseUrl, _settings.LogoImageUrlSmall);
+		//viewModel.LogoImageUrlSmall = _settings.LogoImageUrlSmall.StartsWith("http") ? _settings.LogoImageUrlSmall : JoinUriSegments(_settings.BaseUrl, _settings.LogoImageUrlSmall);
 
 		/*
             public string UnsubscribeUrl { get; set; } = string.Empty;

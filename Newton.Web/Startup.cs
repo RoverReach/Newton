@@ -59,8 +59,8 @@ public class Startup
 
 		services.AddRazorPages();
 
-		// Add Swagger documentation
-		services.AddSwaggerGen(c =>
+        // Add Swagger documentation
+        services.AddSwaggerGen(c =>
 		{
 			c.SwaggerDoc("v1", new OpenApiInfo { Title = "Newton.Web API", Version = "v1" });
 

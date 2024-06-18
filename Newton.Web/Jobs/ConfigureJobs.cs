@@ -1,4 +1,5 @@
-﻿using Hangfire;
+﻿using System;
+using Hangfire;
 
 namespace Newton.Web.Jobs;
 
@@ -10,6 +11,6 @@ public static class ConfigureJobs
 	public static void Schedule()
 	{
 		// Sample job that prints hello every minute to the console
-		RecurringJob.AddOrUpdate<SampleJob>(generator => generator.Hello(), "* * * * *");
+		//RecurringJob.AddOrUpdate<SampleJob>(generator => generator.Hello(), "* * * * *");
 	}
 }
