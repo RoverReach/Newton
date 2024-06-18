@@ -92,7 +92,7 @@ public class Program
 	{
 		var builder = WebApplication.CreateBuilder();
 
-		//builder.Configuration.AddEnvironmentVariables();
+		builder.Configuration.AddEnvironmentVariables();
 		builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly(), true);
 		builder.Configuration.AddDoppler(builder.Configuration.GetValue<string>("DOPPLER_TOKEN"));
 		builder.Host.UseSerilog(Log.Logger);

@@ -56,7 +56,7 @@ jobs:
         command: sed -i 's/-d .*/-d ${{ secrets.REMOTE_HOST }}/' /var/newton/archimedes-deploy/lightsail/ubuntu/scripts/certbot/install-certbot.sh
         host: ${{ secrets.REMOTE_HOST }}
         username: ${{ secrets.REMOTE_USER }}
-        passphrase: ${{ secrets.PASSPHRASE }}
+        password: ${{ secrets.PASSPHRASE }}
          
         
     - name: Update Newton Service Environment
