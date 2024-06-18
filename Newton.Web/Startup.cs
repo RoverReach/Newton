@@ -55,7 +55,9 @@ public class Startup
 
 
         // Add Mvc services
-        services.AddMvc().AddRazorRuntimeCompilation();
+        services.AddMvc(); 
+	        
+//	        .AddRazorRuntimeCompilation();
 
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
