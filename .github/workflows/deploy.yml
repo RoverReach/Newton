@@ -1,0 +1,76 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  Deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Pull submodules
+      run: git submodule update --init --recursive --depth 3  
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1.7.2
+      with:
+        dotnet-version: 8.0.x 
+    
+    - name: DotNet Restore
+      run: dotnet restore
+    
+    - name: DotNet Build
+      run: dotnet build --no-restore
+     
+    - name: DotNet Publish
+      run: dotnet publish -c Release
+      
+    - name: Stop Newton Service
+      uses: garygrossgarten/github-action-ssh@v0.6.3
+      with:
+        command: sudo service jalexweb stop
+        host: ${{ secrets.REMOTE_HOST }}
+        username: ${{ secrets.REMOTE_USER }}
+        passphrase: ${{ secrets.PASSPHRASE }}
+      
+    - name: Copy to Server via SCP
+      uses: garygrossgarten/github-action-scp@release
+      with:
+        local: /home/runner/work/Newton/Newton.Web/bin/Release/net8.0/publish/
+        concurrency: 10
+        remote: ${{ secrets.REMOTE_TARGET }}
+        host: ${{ secrets.REMOTE_HOST }}
+        username: ${{ secrets.REMOTE_USER }}
+        passphrase: ${{ secrets.PASSPHRASE }}
+
+      env:
+        ASPNETCORE_ENVIRONMENT: Production
+        
+    - name: Update certbot installation
+      uses: garygrossgarten/github-action-ssh@v0.6.3
+      with:
+        command: sed -i 's/-d .*/-d ${{ secrets.REMOTE_HOST }}/' /var/newton/archimedes-deploy/lightsail/ubuntu/scripts/certbot/install-certbot.sh
+        host: ${{ secrets.REMOTE_HOST }}
+        username: ${{ secrets.REMOTE_USER }}
+        passphrase: ${{ secrets.PASSPHRASE }}
+         
+        
+    - name: Update Newton Service Environment
+      uses: garygrossgarten/github-action-ssh@v0.6.3
+      with:
+        command: sudo sed -i 's/DOPPLER_ACCESS_KEY=.*/DOPPLER_ACCESS_KEY=${{ secrets.DOPPLER_ACCESS_KEY }}/' /etc/systemd/system/newton.service && sudo systemctl daemon-reload
+        host: ${{ secrets.REMOTE_HOST }}
+        username: ${{ secrets.REMOTE_USER }}
+        passphrase: ${{ secrets.PASSPHRASE }}
+       
+    - name: Start Newton Service
+      uses: garygrossgarten/github-action-ssh@v0.6.3
+      with:
+        command: sudo service newton start
+        host: ${{ secrets.REMOTE_HOST }}
+        username: ${{ secrets.REMOTE_USER }}
+        passphrase: ${{ secrets.PASSPHRASE }}
