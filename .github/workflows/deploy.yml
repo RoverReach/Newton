@@ -30,12 +30,12 @@ jobs:
       run: dotnet publish -c Release
       
     - name: Stop Newton Service
-      uses: garygrossgarten/github-action-ssh@v0.6.3
+      uses: garygrossgarten/github-action-ssh@release
       with:
-        command: sudo service jalexweb stop
+        command: sudo service newton stop
         host: ${{ secrets.REMOTE_HOST }}
         username: ${{ secrets.REMOTE_USER }}
-        passphrase: ${{ secrets.PASSPHRASE }}
+        password: ${{ secrets.PASSPHRASE }}
       
     - name: Copy to Server via SCP
       uses: garygrossgarten/github-action-scp@release
@@ -45,13 +45,13 @@ jobs:
         remote: ${{ secrets.REMOTE_TARGET }}
         host: ${{ secrets.REMOTE_HOST }}
         username: ${{ secrets.REMOTE_USER }}
-        passphrase: ${{ secrets.PASSPHRASE }}
+        password: ${{ secrets.PASSPHRASE }}
 
       env:
         ASPNETCORE_ENVIRONMENT: Production
         
     - name: Update certbot installation
-      uses: garygrossgarten/github-action-ssh@v0.6.3
+      uses: garygrossgarten/github-action-ssh@release
       with:
         command: sed -i 's/-d .*/-d ${{ secrets.REMOTE_HOST }}/' /var/newton/archimedes-deploy/lightsail/ubuntu/scripts/certbot/install-certbot.sh
         host: ${{ secrets.REMOTE_HOST }}
@@ -60,17 +60,17 @@ jobs:
          
         
     - name: Update Newton Service Environment
-      uses: garygrossgarten/github-action-ssh@v0.6.3
+      uses: garygrossgarten/github-action-ssh@release
       with:
         command: sudo sed -i 's/DOPPLER_ACCESS_KEY=.*/DOPPLER_ACCESS_KEY=${{ secrets.DOPPLER_ACCESS_KEY }}/' /etc/systemd/system/newton.service && sudo systemctl daemon-reload
         host: ${{ secrets.REMOTE_HOST }}
         username: ${{ secrets.REMOTE_USER }}
-        passphrase: ${{ secrets.PASSPHRASE }}
+        password: ${{ secrets.PASSPHRASE }}
        
     - name: Start Newton Service
-      uses: garygrossgarten/github-action-ssh@v0.6.3
+      uses: garygrossgarten/github-action-ssh@release
       with:
         command: sudo service newton start
         host: ${{ secrets.REMOTE_HOST }}
         username: ${{ secrets.REMOTE_USER }}
-        passphrase: ${{ secrets.PASSPHRASE }}
+        password: ${{ secrets.PASSPHRASE }}
