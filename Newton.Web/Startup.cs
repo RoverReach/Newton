@@ -17,6 +17,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using Grpc.Auth;
+using Newtonsoft.Json;
 
 namespace Newton.Web;
 
@@ -53,11 +54,12 @@ public class Startup
 		});
 
 
-		// Add Mvc services
-		services.AddMvc()
-				.AddRazorRuntimeCompilation();
+        // Add Mvc services
+        services.AddMvc().AddRazorRuntimeCompilation();
 
-		services.AddRazorPages();
+        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+        services.AddRazorPages();
 
         // Add Swagger documentation
         services.AddSwaggerGen(c =>

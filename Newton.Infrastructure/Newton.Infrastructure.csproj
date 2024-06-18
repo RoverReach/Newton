@@ -10,6 +10,7 @@
 		<PackageReference Include="Audit.EntityFramework.Core" Version="25.0.3" />
 		<PackageReference Include="AutoMapper" Version="13.0.1" />
 		<PackageReference Include="Google.Cloud.Firestore" Version="3.7.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="RoverCore.FluentEmail.Core" Version="3.0.3" />
 		<PackageReference Include="RoverCore.FluentEmail.Liquid" Version="3.0.3" />
 		<PackageReference Include="RoverCore.FluentEmail.MailKit" Version="3.0.3" />
