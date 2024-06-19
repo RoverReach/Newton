@@ -18,14 +18,16 @@ public static class Startup
 	{
 		services.AddDbContext<ApplicationDbContext>(options =>
 		{
-			options.UseSqlServer(configuration.GetConnectionString("AppContext"),
-				x => x.MigrationsAssembly("Newton.Infrastructure"));
+			options.UseSqlite("Data Source=database.db", x => x.MigrationsAssembly("Newton.Infrastructure"));
+//			options.UseSqlServer(configuration.GetConnectionString("AppContext"),
+//				x => x.MigrationsAssembly("Newton.Infrastructure"));
 		}, optionsLifetime: ServiceLifetime.Singleton, contextLifetime: ServiceLifetime.Scoped);
 
 		services.AddDbContextFactory<ApplicationDbContext>(options =>
 		{
-			options.UseSqlServer(configuration.GetConnectionString("AppContext"),
-				x => x.MigrationsAssembly("Newton.Infrastructure"));
+			options.UseSqlite("Data Source=database.db", x => x.MigrationsAssembly("Newton.Infrastructure"));
+//			options.UseSqlServer(configuration.GetConnectionString("AppContext"),
+//				x => x.MigrationsAssembly("Newton.Infrastructure"));
 		});
 
 		Audit.EntityFramework.Configuration.Setup()

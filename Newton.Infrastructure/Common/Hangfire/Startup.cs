@@ -1,5 +1,6 @@
 ﻿using Hangfire;
 using Hangfire.SqlServer;
+using Hangfire.Storage.SQLite;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,14 +16,8 @@ public static class Startup
 			.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
 			.UseSimpleAssemblyNameTypeSerializer()
 			.UseRecommendedSerializerSettings()
-			.UseSqlServerStorage(configuration.GetConnectionString("AppContext"), new SqlServerStorageOptions
-			{
-				CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
-				SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
-				QueuePollInterval = TimeSpan.Zero,
-				UseRecommendedIsolationLevel = true,
-				DisableGlobalLocks = true
-			}));
+			.UseSQLiteStorage("Data Source=database.db")
+			);
 
 		services.AddHangfireServer();
 	}

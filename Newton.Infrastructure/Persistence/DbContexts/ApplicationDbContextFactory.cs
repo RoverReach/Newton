@@ -29,8 +29,9 @@ public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<Applicati
 		var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
 		var connectionString = configuration.GetConnectionString("AppContext");
 
-		builder.UseSqlServer(connectionString);
+		//builder.UseSqlServer(connectionString);
+		builder.UseSqlite("Data Source=database.db", x => x.MigrationsAssembly("Newton.Infrastructure"));
 
-		return new ApplicationDbContext(builder.Options);
+        return new ApplicationDbContext(builder.Options);
 	}
 }
