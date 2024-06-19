@@ -28,8 +28,8 @@
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.3" PrivateAssets="All" />
 		<PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.3" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
-		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.2" PrivateAssets="All" />
-		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Templating" Version="8.0.2" PrivateAssets="All" />
+		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.2" PrivateAssets="All"  />
+		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Templating" Version="8.0.2" PrivateAssets="All"  ExcludeAssets="runtime;build;native;contentfiles;analyzers" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="RestSharp" Version="110.2.0" />
 		<PackageReference Include="RoverCore.BreadCrumbs" Version="1.0.3" />
