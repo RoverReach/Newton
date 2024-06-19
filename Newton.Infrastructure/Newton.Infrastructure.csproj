@@ -51,6 +51,11 @@
 		</Content>
 	</ItemGroup>
 	<ItemGroup>
+		<Content Include="..\Newton.Web\database.db">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+	<ItemGroup>
 		<EmbeddedResource Include="Common\Templates\Email\*.liquid" />
 	</ItemGroup>
 	<ItemGroup>
