@@ -62,7 +62,7 @@ jobs:
     - name: Update Newton Service Environment
       uses: garygrossgarten/github-action-ssh@release
       with:
-        command: sudo sed -i 's/DOPPLER_ACCESS_KEY=.*/DOPPLER_ACCESS_KEY=${{ secrets.DOPPLER_ACCESS_KEY }}/' /etc/systemd/system/newton.service && sudo systemctl daemon-reload
+        command: sudo sed -i 's/DOPPLER_TOKEN=.*/DOPPLER_TOKEN=${{ secrets.DOPPLER_ACCESS_KEY }}/' /etc/systemd/system/newton.service && sudo systemctl daemon-reload
         host: ${{ secrets.REMOTE_HOST }}
         username: ${{ secrets.REMOTE_USER }}
         password: ${{ secrets.PASSPHRASE }}
